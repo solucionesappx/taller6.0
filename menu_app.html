@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barra de Navegación con Íconos</title>
+    <!-- Incluye la fuente 'Inter' desde Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Incluye la biblioteca de iconos Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* Estilos generales para el cuerpo y la fuente */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            /* Agrega un padding en la parte superior del body para que el contenido no quede detrás de la barra fija */
+            padding-top: 80px; 
+        }
+
+        /* Estilos para el elemento de navegación */
+        nav {
+            background-color: #1a202c; /* Color de fondo oscuro para contraste */
+            border-radius: 0 0 12px 12px; /* Redondea solo las esquinas inferiores */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            /* Propiedades para fijar la barra de navegación en la parte superior */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000; /* Asegura que la barra esté siempre por encima de otros elementos */
+        }
+
+        /* Estilos para la lista no ordenada */
+        .nav-bar {
+            list-style: none; /* Elimina las viñetas */
+            display: flex; /* Utiliza Flexbox para alinear elementos horizontalmente */
+            padding: 0;
+            margin: 0;
+            overflow: hidden; /* Oculta cualquier desbordamiento */
+        }
+
+        /* Estilos para cada elemento de la lista */
+        .nav-bar li {
+            flex: 1; /* Permite que cada elemento se expanda para ocupar el espacio disponible */
+            text-align: center;
+        }
+
+        /* Estilos para los enlaces (links) */
+        .nav-bar li a {
+            display: flex; /* Utiliza Flexbox para centrar el ícono y el texto */
+            flex-direction: column; /* Apila el ícono y el texto verticalmente */
+            align-items: center;
+            justify-content: center;
+            color: #e2e8f0; /* Color de texto claro */
+            text-decoration: none; /* Elimina el subrayado */
+            padding: 16px 20px;
+            transition: background-color 0.3s ease; /* Transición suave para el efecto hover */
+            font-weight: 700;
+        }
+
+        /* Estilos para el efecto al pasar el cursor (hover) */
+        .nav-bar li a:hover {
+            background-color: #2d3748; /* Color de fondo ligeramente más claro al pasar el cursor */
+        }
+        
+        /* Estilos para los íconos */
+        .nav-bar li a .icon {
+            font-size: 24px; /* Tamaño del ícono */
+        }
+
+        /* Estilos para el texto */
+        .nav-bar li a .text {
+            font-size: 14px; /* Tamaño del texto */
+            opacity: 0; /* Oculta el texto por defecto */
+            height: 0; /* Oculta el texto por defecto */
+            visibility: hidden;
+            transition: opacity 0.3s ease, height 0.3s ease, visibility 0s 0.3s; /* Transición para mostrar el texto */
+        }
+        
+        /* Muestra el texto cuando se pasa el cursor sobre el enlace */
+        .nav-bar li a:hover .text {
+            opacity: 1; /* Hace que el texto sea visible */
+            height: auto;
+            visibility: visible;
+            transition: opacity 0.3s ease, height 0.3s ease;
+        }
+        
+        /* Contenido de la página y manejo de secciones */
+        .content {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section {
+            display: none; /* Oculta todas las secciones por defecto */
+        }
+
+        .section.active {
+            display: block; /* Muestra la sección activa */
+        }
+        
+        /* Contenedor principal de la tabla */
+        #vehiculos-container {
+            margin-top: 20px;
+            overflow-x: auto; /* Habilita el desplazamiento horizontal */
+        }
+
+        /* Estilos de la tabla de datos */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        /* Estilo para todos los encabezados de la tabla */
+        .data-table th {
+            background-color: #e2e8f0; /* Color de fondo claro para todos los encabezados */
+            color: #1a202c; /* Color de texto oscuro para el contraste */
+            border: 1px solid #ddd;
+            padding: 5px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        /* Estilo para las celdas normales de la tabla */
+        .data-table td {
+            border: 1px solid #ddd;
+            padding: 3px;
+            text-align: left;
+            white-space: nowrap; /* Evita que el texto se envuelva */
+        }
+        
+        /* Estilos para las columnas fijas (las celdas, no el encabezado) */
+        .data-table .sticky-col {
+            position: sticky;
+            background-color: #e2e8f0; /* Color de fondo para las celdas fijas */
+            z-index: 2; /* Mayor que el resto de celdas para que se superponga */
+        }
+
+        /* Sobreescribe el estilo de las celdas fijas para que se mantengan en su lugar */
+        .data-table th.sticky-col {
+            top: 0; /* Asegura que el encabezado también sea anclado verticalmente */
+        }
+
+        /* Posiciones específicas para las columnas ancladas */
+        /* Columna 0 (copia): Anclada a la izquierda */
+        .data-table th.sticky-col-0, .data-table td.sticky-col-0 { 
+            left: 0; 
+            width: 35px; /* Ancho fijo para la columna del botón */
+        }
+        /* Columna 1 (Vehiculo_ID): Anclada después de la columna 0 */
+        .data-table th.sticky-col-1, .data-table td.sticky-col-1 { 
+            left: 35px; /* Comienza donde termina la columna 0 */
+            width: 120px; /* Ancho fijo para esta columna */
+        }
+        /* Columna 2 (Cliente_Nombre): Anclada después de la columna 1 */
+        .data-table th.sticky-col-2, .data-table td.sticky-col-2 { 
+            left: 120px; /* Comienza donde termina la columna 1 (35px + 120px) */
+            width: 130px; /* Ancho fijo para esta columna */
+        }
+        
+        /* Estilos para los botones de la tabla */
+        .data-table button {
+            background-color: #4a5568;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .data-table button:hover {
+            background-color: #2d3748;
+        }
+        
+        /* Estilo para los botones de acción como "Añadir Fila" */
+        .action-button {
+            background-color: #4a5568;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .action-button:hover {
+            background-color: #2d3748;
+        }
+
+        .action-button:active {
+            transform: scale(0.98);
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a202c;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Estilos para la ventana de mensaje personalizada */
+        .message-box {
+            position: fixed;
+            top: 90px;
+            right: 100px;
+            background-color: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul class="nav-bar">
+            <li>
+                <a href="#inicio" id="link-inicio">
+                    <i class="fas fa-home icon"></i>
+                    <span class="text">Inicio</span>
+                </a>
+            </li>
+            <li>
+                <a href="#vehiculos" id="link-vehiculos">
+                    <i class="fas fa-car icon"></i>
+                    <span class="text">Vehículos</span>
+                </a>
+            </li>
+            <li>
+                <a href="#servicios" id="link-servicios">
+                    <i class="fas fa-tools icon"></i>
+                    <span class="text">Servicios</span>
+                </a>
+            </li>
+            <li>
+                <a href="#contacto" id="link-contacto">
+                    <i class="fas fa-envelope icon"></i>
+                    <span class="text">Contacto</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="content">
+        <!-- Sección de Inicio -->
+        <div id="inicio" class="section active">
+            <h1>¡Bienvenido!</h1>
+            <p>
+                Este es un ejemplo de contenido para demostrar el comportamiento de la barra de navegación. Haz clic en las pestañas para ver el contenido dinámico.
+            </p>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+        </div>
+
+        <!-- Sección de Vehículos (aquí se mostrará la tabla) -->
+        <div id="vehiculos" class="section">
+            <h1>Tabla de Vehículos</h1>
+            <!-- Botón para añadir una nueva fila -->
+            <button id="add-row-button" class="action-button">
+                <i class="fas fa-plus"></i> Añadir Fila
+            </button>
+            <div id="vehiculos-container">
+                <!-- El contenido de la tabla se inyectará aquí con JavaScript -->
+            </div>
+        </div>
+
+        <!-- Sección de Servicios -->
+        <div id="servicios" class="section">
+            <h1>Nuestros Servicios</h1>
+            <p>Contenido relacionado con los servicios que ofreces.</p>
+        </div>
+
+        <!-- Sección de Contacto -->
+        <div id="contacto" class="section">
+            <h1>Contacto</h1>
+            <p>Formulario o información de contacto.</p>
+        </div>
+    </div>
+
+    <!-- Ventana de mensaje personalizada (oculta por defecto) -->
+    <div id="message-box" class="message-box">
+        <span id="message-text"></span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Importante: Reemplaza esta URL con la URL de despliegue de tu script GAS
+            const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxiRogoHmvMPW7oo-q3_013L1DoLD3eG1qM8MxBJg8qvResNGEWXkXxxrld-XrBUUbt/exec';
+            
+            const navLinks = document.querySelectorAll('.nav-bar a');
+            const sections = document.querySelectorAll('.section');
+            const vehiculosContainer = document.getElementById('vehiculos-container');
+            const messageBox = document.getElementById('message-box');
+            const messageText = document.getElementById('message-text');
+            const addRowButton = document.getElementById('add-row-button');
+
+            // Función para mostrar la sección correcta
+            function showSection(sectionId) {
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(sectionId).classList.add('active');
+            }
+
+            // Función para mostrar la ventana de mensaje
+            function showMessage(message) {
+                messageText.textContent = message;
+                messageBox.style.opacity = '1';
+                messageBox.style.visibility = 'visible';
+                setTimeout(() => {
+                    messageBox.style.opacity = '0';
+                    messageBox.style.visibility = 'hidden';
+                }, 2000); // Oculta la ventana después de 2 segundos
+            }
+
+            // Función para formatear la fecha y hora a dd/mm/aaaa hh:mm:ss
+            function formatDateTime(date) {
+                const d = new Date(date);
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                const hours = String(d.getHours()).padStart(2, '0');
+                const minutes = String(d.getMinutes()).padStart(2, '0');
+                const seconds = String(d.getSeconds()).padStart(2, '0');
+                return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+            }
+
+            // Función para adjuntar los listeners de copia a los botones
+            function attachCopyListeners() {
+                const copyButtons = document.querySelectorAll('.copy-button');
+                copyButtons.forEach(button => {
+                    // Evita adjuntar el mismo listener varias veces
+                    if (button.dataset.listenerAttached) {
+                        return;
+                    }
+                    button.dataset.listenerAttached = true;
+                    
+                    button.addEventListener('click', () => {
+                        const row = button.closest('tr');
+                        const cells = row.querySelectorAll('td');
+                        
+                        // Obtiene los valores de las columnas específicas para copiar
+                        // Nota: La primera celda (índice 0) es el botón de copia, por lo que las
+                        // otras celdas se desplazan en el índice.
+                        const placa = cells[headers.indexOf('Vehiculo_Placa') + 1].textContent.trim();
+                        const marca = cells[headers.indexOf('Vehiculo_Marca') + 1].textContent.trim();
+                        const modelo = cells[headers.indexOf('Vehiculo_Modelo') + 1].textContent.trim();
+                        const anio = cells[headers.indexOf('Vehiculo_Año') + 1].textContent.trim();
+
+                        // Concatena los valores con un espacio
+                        const combinedText = `${placa} ${marca} ${modelo} ${anio}`;
+                        
+                        // Utiliza un campo de texto temporal para copiar los datos
+                        const tempInput = document.createElement('textarea');
+                        tempInput.value = combinedText;
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
+                        
+                        // Llama a la nueva función de mensaje
+                        showMessage('Datos del Vehiculo copiados.');
+                    });
+                });
+            }
+
+            // Función para añadir una nueva fila a la tabla (solo en la página)
+            function addNewRow() {
+                const tableBody = document.querySelector('.data-table tbody');
+                // Si la tabla no existe o no tiene cuerpo, no hacemos nada
+                if (!tableBody) {
+                    showMessage('La tabla aún no está cargada.');
+                    return;
+                }
+                
+                // Obtenemos el número de columnas de la tabla existente
+                const numColumns = tableBody.querySelector('tr').children.length;
+                
+                // Crea el HTML para la nueva fila
+                let newRowHtml = '<tr>';
+                for (let i = 0; i < numColumns; i++) {
+                    // La primera celda es para el botón de copia
+                    if (i === 0) {
+                        newRowHtml += '<td class="sticky-col sticky-col-0"><button class="copy-button"><i class="fas fa-copy"></i></button></td>';
+                    } else if (i === 1 || i === 2) {
+                        // Las celdas fijas (columna 1 y 2)
+                        newRowHtml += `<td class="sticky-col sticky-col-${i}"></td>`;
+                    } else {
+                        // Las celdas normales
+                        newRowHtml += `<td></td>`;
+                    }
+                }
+                newRowHtml += '</tr>';
+
+                // Añade la nueva fila al cuerpo de la tabla
+                tableBody.insertAdjacentHTML('beforeend', newRowHtml);
+                
+                // Adjunta los listeners de copia a los nuevos botones
+                attachCopyListeners();
+            }
+
+            // Función para cargar y mostrar los datos de la hoja de cálculo
+            async function loadVehiculos() {
+                // Muestra un indicador de carga
+                vehiculosContainer.innerHTML = '<div class="loader"></div>';
+                // Oculta el botón de añadir fila mientras carga
+                addRowButton.style.display = 'none';
+
+                try {
+                    // El script usa el parámetro 'sheet' para saber qué hoja leer
+                    const response = await fetch(`${GAS_API_URL}?sheet=Vehiculos`);
+                    const result = await response.json();
+                    
+                    if (result.error) {
+                        vehiculosContainer.innerHTML = `<p style="color: red;">Error al cargar los datos: ${result.error}</p>`;
+                        console.error('GAS API Error:', result.error);
+                        return;
+                    }
+
+                    const data = result.data;
+                    // Filtra cualquier encabezado vacío o nulo
+                    const headers = result.headers.filter(h => h && h.trim() !== '');
+                    
+                    // Encuentra los índices de las columnas que deben ser fijas
+                    const fixedHeaderNames = ['Vehiculo_ID', 'Cliente_Nombre'];
+                    const fixedIndices = fixedHeaderNames.map(name => headers.indexOf(name));
+                    
+                    // Asegura que las columnas existan
+                    if (fixedIndices.some(index => index === -1)) {
+                        console.error('Error: Una o más columnas a fijar no se encontraron en los datos.');
+                        // Puedes manejar el error mostrando un mensaje al usuario
+                        vehiculosContainer.innerHTML = `<p style="color: red;">Error: Las columnas a anclar (Vehiculo_ID, Cliente_Nombre) no fueron encontradas en los datos de la hoja de cálculo.</p>`;
+                        return;
+                    }
+
+                    // Construye la tabla completa
+                    let tableHTML = '<table class="data-table"><thead><tr>';
+                    
+                    // Genera los encabezados
+                    // Agrega el encabezado de la columna virtual de copia
+                    tableHTML += `<th class="sticky-col sticky-col-0"></th>`;
+                    headers.forEach((header, index) => {
+                        const isFixed = fixedIndices.includes(index);
+                        const className = isFixed ? `sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}` : '';
+                        tableHTML += `<th class="${className}">${header}</th>`;
+                    });
+
+                    tableHTML += '</tr></thead><tbody>';
+
+                    // Filas de la tabla
+                    data.forEach(row => {
+                        tableHTML += '<tr>';
+                        
+                        // Añade la celda de la columna virtual de copia
+                        tableHTML += `<td class="sticky-col sticky-col-0"><button class="copy-button"><i class="fas fa-copy"></i></button></td>`;
+
+                        // Añade las celdas de la fila
+                        headers.forEach((header, index) => {
+                            const isFixed = fixedIndices.includes(index);
+                            const className = isFixed ? `sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}` : '';
+                            let cellValue = row[header] || '';
+
+                            if (header === 'Vehiculo_Data_Reg') {
+                                cellValue = formatDateTime(cellValue);
+                            }
+
+                            tableHTML += `<td class="${className}">${cellValue}</td>`;
+                        });
+                        
+                        tableHTML += '</tr>';
+                    });
+
+                    tableHTML += '</tbody></table>';
+                    vehiculosContainer.innerHTML = tableHTML;
+                    
+                    // Muestra el botón de añadir fila después de que la tabla se ha cargado
+                    addRowButton.style.display = 'inline-flex';
+
+                    // Adjunta los listeners de copia a los botones de la tabla
+                    attachCopyListeners();
+
+                } catch (error) {
+                    vehiculosContainer.innerHTML = '<p style="color: red;">No se pudo conectar con el script. Por favor, asegúrate de que la URL de despliegue sea correcta y esté publicada para acceso anónimo.</p>';
+                    console.error('Fetch Error:', error);
+                }
+            }
+
+            // Maneja los clics en los enlaces de la barra de navegación
+            navLinks.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const sectionId = link.getAttribute('href').substring(1); // Obtiene el ID de la sección sin el '#'
+                    showSection(sectionId);
+
+                    // Si la sección es la de vehículos, carga los datos
+                    if (sectionId === 'vehiculos') {
+                        loadVehiculos();
+                    }
+                });
+            });
+            
+            // Agrega el listener para el botón de añadir fila
+            addRowButton.addEventListener('click', addNewRow);
+
+            // Muestra la sección de inicio por defecto
+            showSection('inicio');
+        });
+    </script>
+</body>
+</html>
