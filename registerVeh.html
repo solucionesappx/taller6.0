@@ -3,711 +3,345 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barra de Navegación con Íconos</title>
-    <!-- Incluye la fuente 'Inter' desde Google Fonts -->
+    <title>Registrar Vehículo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Incluye la biblioteca de iconos Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilos generales para el cuerpo y la fuente */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8;
-            margin: 0;
-            /* Agrega un padding en la parte superior del body para que el contenido no quede detrás de la barra fija */
-            padding-top: 80px; 
-        }
-
-        /* Estilos para el elemento de navegación */
-        nav {
-            background-color: #007bff; /* Un azul más vivo */
-            /* Se eliminó el border-radius para hacer los bordes cuadrados */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            /* Propiedades para fijar la barra de navegación en la parte superior */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000; /* Asegura que la barra esté siempre por encima de otros elementos */
-        }
-
-        /* Estilos para la lista no ordenada */
-        .nav-bar {
-            list-style: none; /* Elimina las viñetas */
-            display: flex; /* Utiliza Flexbox para alinear elementos horizontalmente */
-            padding: 0;
-            margin: 0;
-            overflow: hidden; /* Oculta cualquier desbordamiento */
-        }
-
-        /* Estilos para cada elemento de la lista */
-        .nav-bar li {
-            flex: 1; /* Permite que cada elemento se expanda para ocupar el espacio disponible */
-            text-align: center;
-        }
-
-        /* Estilos para los enlaces (links) */
-        .nav-bar li a {
-            display: flex; /* Utiliza Flexbox para centrar el ícono y el texto */
-            flex-direction: column; /* Apila el ícono y el texto verticalmente */
-            align-items: center;
-            justify-content: center;
-            color: #e2e8f0; /* Color de texto claro */
-            text-decoration: none; /* Elimina el subrayado */
-            padding: 16px 20px;
-            transition: background-color 0.3s ease; /* Transición suave para el efecto hover */
-            font-weight: 700;
-        }
-
-        /* Estilos para el efecto al pasar el cursor (hover) */
-        .nav-bar li a:hover {
-            background-color: #0056b3; /* Un azul más oscuro al pasar el cursor */
-        }
-        
-        /* Estilos para los íconos */
-        .nav-bar li a .icon {
-            font-size: 24px; /* Tamaño del ícono */
-        }
-
-        /* Estilos para el texto */
-        .nav-bar li a .text {
-            font-size: 14px; /* Tamaño del texto */
-            opacity: 0; /* Oculta el texto por defecto */
-            height: 0; /* Oculta el texto por defecto */
-            visibility: hidden;
-            transition: opacity 0.3s ease, height 0.3s ease, visibility 0s 0.3s; /* Transición para mostrar el texto */
-        }
-        
-        /* Muestra el texto cuando se pasa el cursor sobre el enlace */
-        .nav-bar li a:hover .text {
-            opacity: 1; /* Hace que el texto sea visible */
-            height: auto;
-            visibility: visible;
-            transition: opacity 0.3s ease, height 0.3s ease;
-        }
-        
-        /* Contenido de la página y manejo de secciones */
-        .content {
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-radius: 12px;
-        }
-
-        .section {
-            display: none; /* Oculta todas las secciones por defecto */
-        }
-
-        .section.active {
-            display: block; /* Muestra la sección activa */
-        }
-        
-        /* Contenedor principal de la tabla */
-        .table-container {
-            margin-top: 20px;
-            overflow-x: auto; /* Habilita el desplazamiento horizontal */
-        }
-        
-        .table-container + .table-container {
-            margin-top: 40px; /* Agrega más espacio entre las tablas */
-        }
-
-        /* Estilos de la tabla de datos */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-
-        /* Estilo para todos los encabezados de la tabla */
-        .data-table th {
-            background-color: #e2e8f0; /* Color de fondo claro para todos los encabezados */
-            color: #1a202c; /* Color de texto oscuro para el contraste */
-            border: 1px solid #ddd;
-            padding: 5px;
-            text-align: left;
-            white-space: nowrap;
-        }
-
-        /* Estilo para las celdas normales de la tabla */
-        .data-table td {
-            border: 1px solid #ddd;
-            padding: 3px;
-            text-align: left;
-            white-space: nowrap; /* Evita que el texto se envuelva */
-        }
-        
-        /* Estilos para las columnas fijas (las celdas, no el encabezado) */
-        .data-table .sticky-col {
-            position: sticky;
-            background-color: #e2e8f0; /* Color de fondo para las celdas fijas */
-            z-index: 2; /* Mayor que el resto de celdas para que se superponga */
-        }
-
-        /* Sobreescribe el estilo de las celdas fijas para que se mantengan en su lugar */
-        .data-table th.sticky-col {
-            top: 0; /* Asegura que el encabezado también sea anclado verticalmente */
-        }
-
-        /* Estilos específicos para las columnas ancladas de la tabla de vehículos */
-        .data-table th.sticky-col-0, .data-table td.sticky-col-0 { 
-            left: 0; 
-            width: 15px; /* Ancho fijo para la columna del botón */
-        }
-        .data-table th.sticky-col-1, .data-table td.sticky-col-1 { 
-            left: 35px; /* Comienza donde termina la columna 0 */
-            width: 115px; /* ANCHO AJUSTADO para que coincida con la tabla de órdenes */
-        }
-        .data-table th.sticky-col-2, .data-table td.sticky-col-2 { 
-            /* Se basa en el ancho de las columnas anteriores: 35px (columna 0) + 80px (columna 1) */
-            left: 125px; 
-            width: 500px; /* Ancho ajustado para esta columna */
-        }
-       
-        /* Estilos específicos para las columnas ancladas de la tabla de órdenes */
-        .ordenes-table th.sticky-col-0, .ordenes-table td.sticky-col-0 {
-            left: 0;
-            width: 15px; /* Ancho fijo para la columna del botón */
-        }
-        .ordenes-table th.sticky-col-1, .ordenes-table td.sticky-col-1 {
-            left: 35px; /* Comienza donde termina la columna 0 */
-            width: 80px; /* Ancho reducido para el Orden_ID */
-        }
-        .ordenes-table th.sticky-col-2, .ordenes-table td.sticky-col-2 {
-            /* Se basa en el ancho de las columnas anteriores: 35px (columna 0) + 80px (columna 1) */
-            left: 115px; 
-            width: 80px; /* Ancho reducido para el Orden_ID */
-        }
-       
-        /* Estilos para los botones de la tabla */
-        .data-table button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 5px 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .data-table button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Nuevo estilo para justificar el texto a la derecha */
-        .data-table .text-right {
-            text-align: right;
-        }
-
-        /* Estilos para la barra de búsqueda */
-        .search-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-
-        .search-input {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .search-button {
-            padding: 10px 15px;
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            white-space: nowrap; /* Evita que el texto se envuelva */
-        }
-
-        .search-button:hover {
-            background-color: #5a6268;
-        }
-      
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #007bff;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Estilos para la ventana de mensaje personalizada */
-        .message-box {
-            position: fixed;
-            top: 90px;
-            right: 100px;
-            background-color: rgba(0, 0, 0, 0.75);
-            color: #fff;
-            padding: 15px 30px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
-        }
-      
-        /* Clase para un ancho de columna reducido */
-        .col-narrow {
-            width: 100px;
-        }
-      
-        /* Estilos para el nuevo botón en la sección de vehículos */
-        .register-button {
-            display: block;
-            width: fit-content;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
-            text-align: center;
-            border-radius: 8px;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .register-button:hover {
-            background-color: #218838;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .btn-animation { transition: all 0.2s ease-in-out; }
+        .btn-animation:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+        .input-focus-animation:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25); }
+        .modal-overlay { background-color: rgba(0, 0, 0, 0.5); z-index: 999; }
+        .modal-content { z-index: 1000; transform: translateY(-20px); opacity: 0; transition: opacity 0.3s ease-out, transform 0.3s ease-out; }
+        .modal-content.show { opacity: 1; transform: translateY(0); }
+        .message-success { background-color: #d1fae5; border-color: #a7f3d0; color: #065f46; }
+        .message-error { background-color: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+        .message-info { background-color: #e0f2fe; border-color: #93c5fd; color: #1e40af; }
     </style>
 </head>
-<body>
-    <nav>
-        <ul class="nav-bar">
-            <li>
-                <a href="#inicio" id="link-inicio">
-                    <i class="fas fa-home icon"></i>
-                    <span class="text">Inicio</span>
-                </a>
-            </li>
-            <li>
-                <!-- MODIFICACIÓN: El enlace de "Vehículos" ahora apunta de nuevo a su sección. -->
-                <a href="#vehiculos" id="link-vehiculos">
-                    <i class="fas fa-car icon"></i>
-                    <span class="text">Vehículos</span>
-                </a>
-            </li>
-            <li>
-                <a href="#servicios" id="link-servicios">
-                    <i class="fas fa-tools icon"></i>
-                    <span class="text">Servicios</span>
-                </a>
-            </li>
-            <li>
-                <a href="#contacto" id="link-contacto">
-                    <i class="fas fa-envelope icon"></i>
-                    <span class="text">Contacto</span>
-                </a>
-            </li>
-            <!-- Botón de Cerrar Sesión añadido -->
-            <li>
-                <a href="#" id="link-logout">
-                    <i class="fas fa-sign-out-alt icon"></i>
-                    <span class="text">Cerrar Sesión</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-    <div class="content">
-        <!-- Sección de Inicio -->
-        <div id="inicio" class="section active">
-            <h1>Listado de Vehículos y Órdenes</h1>
-            
-            <!-- Contenedor del motor de búsqueda -->
-            <div class="search-container">
-                <input type="text" id="search-input" class="search-input" placeholder="Buscar en todas las tablas...">
-                <button id="clear-search-btn" class="search-button">
-                    <i class="fas fa-times"></i>
+<body class="bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-2xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 sm:p-10 border border-gray-100">
+            <h1 class="text-4xl font-extrabold text-center text-gray-900 mb-3">Registrar Vehículo</h1>
+            <p class="text-center text-gray-500 mb-8 max-w-sm mx-auto" id="welcome-message">Bienvenido, Cliente.</p>
+
+            <!-- Botones de navegación -->
+            <div class="flex justify-start mb-8">
+                <button id="back-to-menu-button" class="btn-animation py-2 px-4 rounded-xl font-semibold bg-gray-200 text-gray-800 shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">Regresar al Menú</button>
+                <button id="logout-button" class="btn-animation py-2 px-4 rounded-xl font-semibold bg-red-500 text-white shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 ml-auto">Cerrar Sesión</button>
+            </div>
+
+            <form id="vehicleRegistrationForm">
+                <div class="space-y-5">
+                    <div>
+                        <label for="vehiculo-marca" class="block text-sm font-medium text-gray-700 mb-1">Marca del Vehículo</label>
+                        <input type="text" id="vehiculo-marca"
+                               class="input-focus-animation mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 text-gray-800"
+                               placeholder="Ej. Toyota">
+                    </div>
+                    <div>
+                        <label for="vehiculo-modelo" class="block text-sm font-medium text-gray-700 mb-1">Modelo del Vehículo</label>
+                        <input type="text" id="vehiculo-modelo"
+                               class="input-focus-animation mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 text-gray-800"
+                               placeholder="Ej. Corolla">
+                    </div>
+                    <div>
+                        <label for="vehiculo-anio" class="block text-sm font-medium text-gray-700 mb-1">Año del Vehículo</label>
+                        <input type="number" id="vehiculo-anio" min="1900" max="2099"
+                               class="input-focus-animation mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 text-gray-800"
+                               placeholder="Ej. 2020">
+                    </div>
+                    <div>
+                        <label for="vehiculo-placa" class="block text-sm font-medium text-gray-700 mb-1">Placa del Vehículo</label>
+                        <input type="text" id="vehiculo-placa"
+                               class="input-focus-animation mt-1 block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 text-gray-800"
+                               placeholder="Ej. ABC123">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-animation w-full mt-8 flex items-center justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Registrar Vehículo
                 </button>
-            </div>
+            </form>
 
-            <div id="vehiculos-container" class="table-container">
-                <!-- El contenido de la tabla de vehículos se inyectará aquí con JavaScript -->
-            </div>
-
-            <div id="ordenes-container" class="table-container">
-                <!-- El contenido de la tabla de órdenes se inyectará aquí con JavaScript -->
-            </div>
-        </div>
-        
-        <!-- Sección de Vehículos -->
-        <div id="vehiculos" class="section">
-            <!-- El contenido del formulario se cargará aquí dinámicamente -->
-        </div>
-
-        <!-- Secciones de Servicios y Contacto. -->
-        <div id="servicios" class="section">
-            <h1>Nuestros Servicios</h1>
-            <p>Contenido relacionado con los servicios que ofreces.</p>
-        </div>
-
-        <div id="contacto" class="section">
-            <h1>Contacto</h1>
-            <p>Formulario o información de contacto.</p>
+            <!-- Área para mostrar mensajes y resultados del formulario de registro -->
+            <div id="result-container" class="mt-8 text-center p-4 rounded-xl transition-all duration-300 ease-in-out"></div>
         </div>
     </div>
 
-    <!-- Ventana de mensaje personalizada (oculta por defecto) -->
-    <div id="message-box" class="message-box">
-        <span id="message-text"></span>
+    <!-- Modal de Registro Exitoso -->
+    <div id="registration-modal" class="fixed inset-0 flex items-center justify-center hidden modal-overlay">
+        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full modal-content">
+            <h3 class="text-2xl font-bold text-green-700 text-center mb-4" id="modal-title"></h3>
+            <p class="text-gray-700 text-center mb-4" id="modal-message"></p>
+            <div id="modal-content-details" class="text-left bg-green-50 text-green-800 p-4 rounded-lg space-y-2 mb-6">
+                <!-- Los detalles del registro se insertarán aquí por JavaScript -->
+            </div>
+            <div class="flex justify-center space-x-4">
+                <button type="button" onclick="handleAcceptRegistration()" class="btn-animation w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Aceptar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nuevo Modal de Confirmación para Salir/Regresar -->
+    <div id="confirm-exit-modal" class="fixed inset-0 flex items-center justify-center hidden modal-overlay">
+        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full modal-content">
+            <h3 class="text-2xl font-bold text-red-700 text-center mb-4">¡Atención!</h3>
+            <p class="text-gray-700 text-center mb-6">Si regresas al menú, tu sesión se cerrará automáticamente.</p>
+            <div class="flex justify-center space-x-4">
+                <button type="button" id="confirm-exit-accept-btn" class="btn-animation py-2.5 px-6 rounded-xl font-semibold text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    Aceptar y Salir
+                </button>
+                <button type="button" id="confirm-exit-cancel-btn" class="btn-animation py-2.5 px-6 rounded-xl font-semibold bg-gray-300 text-gray-800 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">
+                    Cancelar
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
+        // --- CONFIGURACIÓN --- ref DRIVE App registro DatosVehiculo Taller (script)
+        // ¡IMPORTANTE! Reemplaza esta URL con la URL de tu Google Apps Script Web App desplegada para el registro de vehículos.
+        const GOOGLE_APPS_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzV0eHhsZLgOLJ2iIUU_LQHXy8nWGfq-LTfdvlOpURPHpScnACLp53XLOLLKRxzt1zQ8w/exec'; // Asegúrate de que esta URL sea la correcta
+
+        // Elementos del DOM
+        const welcomeMessage = document.getElementById('welcome-message');
+        const backToMenuButton = document.getElementById('back-to-menu-button');
+        const logoutButton = document.getElementById('logout-button');
+        const vehicleRegistrationForm = document.getElementById('vehicleRegistrationForm');
+        const resultContainer = document.getElementById('result-container');
+
+        const vehiculoMarcaInput = document.getElementById('vehiculo-marca');
+        const vehiculoModeloInput = document.getElementById('vehiculo-modelo');
+        const vehiculoAnioInput = document.getElementById('vehiculo-anio');
+        const vehiculoPlacaInput = document.getElementById('vehiculo-placa');
+
+        // Elementos del Modal de Registro Exitoso
+        const registrationModal = document.getElementById('registration-modal');
+        const modalTitleElement = document.getElementById('modal-title');
+        const modalMessageElement = document.getElementById('modal-message');
+        const modalContentDetails = document.getElementById('modal-content-details');
+
+        // Elementos del Modal de Confirmación de Salida
+        const confirmExitModal = document.getElementById('confirm-exit-modal');
+        const confirmExitAcceptBtn = document.getElementById('confirm-exit-accept-btn');
+        const confirmExitCancelBtn = document.getElementById('confirm-exit-cancel-btn');
+
+        let loggedInUser = null;
+
+        // Función para generar un UUID corto de 5 caracteres alfanuméricos para Vehiculo_ID
+        function generateShortUUID() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789';
+            let result = '';
+            for (let i = 0; i < 5; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        // Función para formatear la fecha y hora a dd/mm/aaaa hh:mm:ss
+        function formatDateTime(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Meses son 0-indexados
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+        }
+
+        // Funciones de utilidad para la UI (mostrar carga, restablecer botón, mostrar resultados, modal)
+        function setLoading(button, text) {
+            button.disabled = true;
+            button.classList.add('opacity-75', 'cursor-not-allowed');
+            button.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>${text}`;
+        }
+
+        function resetButton(button, text) {
+            button.disabled = false;
+            button.classList.remove('opacity-75', 'cursor-not-allowed');
+            button.innerHTML = text;
+        }
+
+        function showResult(htmlContent, type) {
+            resultContainer.innerHTML = htmlContent;
+            if (type === 'success') {
+                resultContainer.classList.add('bg-green-100', 'border-green-300', 'text-green-800', 'shadow-md');
+                resultContainer.classList.remove('bg-red-100', 'border-red-300', 'text-red-800');
+            } else {
+                resultContainer.classList.add('bg-red-100', 'border-red-300', 'text-red-800', 'shadow-md');
+                resultContainer.classList.remove('bg-green-100', 'border-green-300', 'text-green-800');
+            }
+            resultContainer.classList.remove('hidden');
+            setTimeout(() => {
+                resultContainer.classList.add('hidden');
+            }, 3000);
+        }
+
+        function showMessageModal(title, message, type) {
+            const modal = document.getElementById('registration-modal');
+            const modalTitleElement = modal.querySelector('#modal-title');
+            const modalMessageElement = modal.querySelector('#modal-message');
+            const modalContent = modal.querySelector('.modal-content');
+
+            if (modalTitleElement) {
+                modalTitleElement.textContent = title;
+                modalTitleElement.classList.remove('text-green-700', 'text-red-700', 'text-blue-700');
+                if (type === 'success') { modalTitleElement.classList.add('text-green-700'); }
+                else if (type === 'error') { modalTitleElement.classList.add('text-red-700'); }
+                else if (type === 'info') { modalTitleElement.classList.add('text-blue-700'); }
+            }
+            if (modalMessageElement) {
+                modalMessageElement.textContent = message;
+                modalMessageElement.classList.remove('text-gray-700');
+                if (type === 'success') { modalMessageElement.classList.add('text-green-800'); }
+                else if (type === 'error') { modalMessageElement.classList.add('text-red-800'); }
+                else if (type === 'info') { modalMessageElement.classList.add('text-blue-800'); }
+                else { modalMessageElement.classList.add('text-gray-700'); }
+            }
+            modalContent.classList.remove('bg-green-100', 'bg-red-100', 'bg-blue-100', 'bg-white');
+            if (type === 'success') { modalContent.classList.add('bg-green-100'); }
+            else if (type === 'error') { modalContent.classList.add('bg-red-100'); }
+            else if (type === 'info') { modalContent.classList.add('bg-blue-100'); }
+            else { modalContent.classList.add('bg-white'); }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.add('show');
+            }, 10);
+        }
+
+        window.closeMessageModal = function() {
+            const modal = document.getElementById('registration-modal');
+            const modalContent = modal.querySelector('.modal-content');
+            modalContent.classList.remove('show');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        };
+
+        // Función para mostrar el modal de registro de vehículo exitoso
+        function showVehicleRegistrationSuccessModal(vehicleData) {
+            showMessageModal('¡Vehículo Registrado!', 'El vehículo ha sido registrado correctamente:', 'success');
+            modalContentDetails.innerHTML = `
+                <p class="text-sm"><strong>Marca:</strong> ${vehicleData.Vehiculo_Marca}</p>
+                <p class="text-sm"><strong>Modelo:</strong> ${vehicleData.Vehiculo_Modelo}</p>
+                <p class="text-sm"><strong>Año:</strong> ${vehicleData.Vehiculo_Año}</p>
+                <p class="text-sm"><strong>Placa:</strong> ${vehicleData.Vehiculo_Placa}</p>
+                <p class="text-sm"><strong>ID Vehículo:</strong> ${vehicleData.Vehiculo_ID}</p>
+                <p class="text-sm"><strong>Cliente ID:</strong> ${vehicleData.Cliente_ID}</p>
+            `;
+            registrationModal.classList.remove('hidden');
+            setTimeout(() => {
+                registrationModal.querySelector('.modal-content').classList.add('show');
+            }, 10);
+        }
+
+        // Manejador del formulario de registro de vehículo
+        vehicleRegistrationForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitButton = vehicleRegistrationForm.querySelector('button[type="submit"]');
+            setLoading(submitButton, 'Registrando Vehículo...');
+
+            const marca = vehiculoMarcaInput.value.trim();
+            const modelo = vehiculoModeloInput.value.trim();
+            const anio = vehiculoAnioInput.value.trim();
+            const placa = vehiculoPlacaInput.value.trim();
+
+            if (!marca || !modelo || !anio || !placa) {
+                showResult('Por favor, completa todos los campos del vehículo.', 'error');
+                resetButton(submitButton, 'Registrar Vehículo');
+                return;
+            }
+
+            // Obtener el usuario logueado de sessionStorage
+            const userString = sessionStorage.getItem('loggedInUser');
+            if (!userString) {
+                showResult('No hay usuario logueado. Por favor, inicia sesión de nuevo.', 'error');
+                resetButton(submitButton, 'Registrar Vehículo');
+                return;
+            }
+            loggedInUser = JSON.parse(userString);
+
+            const vehicleData = {
+                Vehiculo_ID: generateShortUUID(),
+                Cliente_ID: loggedInUser.Cliente_ID,
+                Vehiculo_Marca: marca,
+                Vehiculo_Modelo: modelo,
+                Vehiculo_Año: anio,
+                Vehiculo_Placa: placa,
+                Vehiculo_Data_Reg: formatDateTime(new Date())
+            };          
+            console.log("Contenido completo del objeto JSON enviado:", vehicleData);
+            
+            // Corregido: Encadenamiento correcto de promesas
+            fetch(GOOGLE_APPS_SCRIPT_WEB_APP_URL, { method: 'POST', body: JSON.stringify(vehicleData) })
+                .then(response => response.json())
+                .then(responseData => {
+                    console.log('Success:', responseData);
+                    if (responseData.status === 'success') {
+                        // Guardar el nuevo vehículo
+                        showVehicleRegistrationSuccessModal(vehicleData);
+                        // Limpiar formulario
+                        vehiculoMarcaInput.value = '';
+                        vehiculoModeloInput.value = '';
+                        vehiculoAnioInput.value = '';
+                        vehiculoPlacaInput.value = '';
+                    } else {
+                        showResult(`
+                            <h3 class="text-xl font-bold text-red-700 mb-2">Error al Registrar Vehículo</h3>
+                            <p class="text-gray-700 mt-2">${responseData.message || 'No se pudo completar el registro del vehículo. Inténtalo de nuevo.'}</p>
+                        `, 'error');
+                    }
+                }) // Aquí termina el .then() correctamente
+                .catch(error => { // El .catch() ahora se aplica a la promesa anterior
+                    console.error('Error!', error.message);
+                    showResult(`
+                        <h3 class="text-xl font-bold text-red-700 mb-2">Error en la Conexión</h3>
+                        <p class="text-gray-700 mt-2">Ocurrió un problema al conectar con el servidor. Inténtalo de nuevo más tarde o contacta soporte.</p>
+                    `, 'error');
+                })
+                .finally(() => { // El .finally() ahora se aplica a la cadena de promesas
+                    resetButton(submitButton, 'Registrar Vehículo');
+                });
+        });
+
+        // Función para manejar el clic en el botón "Aceptar" del modal de registro de vehículo
+        window.handleAcceptRegistration = function() {
+            registrationModal.querySelector('.modal-content').classList.remove('show');
+            setTimeout(() => {
+                registrationModal.classList.add('hidden');
+            }, 300);
+        };
+
+        // --- Inicialización al cargar la página ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Importante: Reemplaza esta URL con la URL de despliegue de tu script GAS
-            const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxiRogoHmvMPW7oo-q3_013L1DoLD3eG1qM8MxBJg8qvResNGEWXkXxxrld-XrBUUbt/exec';
-            
-            const navLinks = document.querySelectorAll('.nav-bar a');
-            const sections = document.querySelectorAll('.section');
-            const vehiculosContainer = document.getElementById('vehiculos-container');
-            const ordenesContainer = document.getElementById('ordenes-container');
-            const vehiculosSection = document.getElementById('vehiculos'); // Nuevo: Referencia a la sección de vehículos
-            const messageBox = document.getElementById('message-box');
-            const messageText = document.getElementById('message-text');
-            const logoutLink = document.getElementById('link-logout');
-            const searchInput = document.getElementById('search-input');
-            const clearSearchBtn = document.getElementById('clear-search-btn');
-
-            // Función para mostrar la sección correcta
-            function showSection(sectionId) {
-                sections.forEach(section => {
-                    section.classList.remove('active');
-                });
-                document.getElementById(sectionId).classList.add('active');
+            // Verificar si el usuario está logueado
+            const userString = sessionStorage.getItem('loggedInUser');
+            if (!userString) {
+                // Si no hay usuario logueado, redirigir al login
+                window.location.href = 'index.html';
+                return;
             }
+            loggedInUser = JSON.parse(userString);
+            welcomeMessage.textContent = `Hola, ${loggedInUser.Cliente_Nombre}.`;
+        });
 
-            // Función para mostrar la ventana de mensaje
-            function showMessage(message) {
-                messageText.textContent = message;
-                messageBox.style.opacity = '1';
-                messageBox.style.visibility = 'visible';
-                setTimeout(() => {
-                    messageBox.style.opacity = '0';
-                    messageBox.style.visibility = 'hidden';
-                }, 2000); // Oculta la ventana después de 2 segundos
-            }
+        // Event Listeners para navegación y cierre de sesión
+        // CAMBIO: El botón "Regresar al Menú" ahora redirige directamente sin modal
+        backToMenuButton.addEventListener('click', () => {
+            window.location.href = 'menu.html'; // Redirigir directamente al menú
+        });
 
-            // Función para formatear la fecha y hora a dd/mm/aaaa hh:mm:ss
-            function formatDateTime(date) {
-                const d = new Date(date);
-                const day = String(d.getDate()).padStart(2, '0');
-                const month = String(d.getMonth() + 1).padStart(2, '0');
-                const year = d.getFullYear();
-                const hours = String(d.getHours()).padStart(2, '0');
-                const minutes = String(d.getMinutes()).padStart(2, '0');
-                const seconds = String(d.getSeconds()).padStart(2, '0');
-                return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-            }
-
-            // Función para adjuntar los listeners de copia para la tabla de vehículos
-            function attachVehiculosCopyListeners() {
-                const copyButtons = vehiculosContainer.querySelectorAll('.copy-button');
-                copyButtons.forEach(button => {
-                    if (button.dataset.listenerAttached) {
-                        return;
-                    }
-                    button.dataset.listenerAttached = true;
-                    
-                    button.addEventListener('click', () => {
-                        const row = button.closest('tr');
-                        const cells = row.querySelectorAll('td');
-                        
-                        // Captura los valores de las celdas en las posiciones correctas para Placa, Modelo y Año
-                        const placa = cells[1].textContent.trim();
-                        const modelo = cells[3].textContent.trim();
-                        const anio = cells[4].textContent.trim();
-
-                        // Concatena los valores con un espacio en blanco
-                        const combinedText = `${placa} ${modelo} ${anio}`;
-                        
-                        const tempInput = document.createElement('textarea');
-                        tempInput.value = combinedText;
-                        document.body.appendChild(tempInput);
-                        tempInput.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(tempInput);
-                        
-                        showMessage('Datos del Vehículo copiados.');
-                    });
-                });
-            }
-
-            // Función para adjuntar los listeners de copia para la tabla de órdenes
-            function attachOrdenesCopyListeners(headers) {
-                const copyButtons = ordenesContainer.querySelectorAll('.copy-button');
-                copyButtons.forEach(button => {
-                    if (button.dataset.listenerAttached) {
-                        return;
-                    }
-                    button.dataset.listenerAttached = true;
-                    
-                    button.addEventListener('click', () => {
-                        const row = button.closest('tr');
-                        const cells = row.querySelectorAll('td');
-                        
-                        // Obtenemos el índice de la columna Vehiculo_Placa de forma dinámica
-                        const vehiculoPlacaIndex = headers.indexOf('Vehiculo_Placa') + 1;
-
-                        const vehiculoPlaca = cells[vehiculoPlacaIndex].textContent.trim();
-                        
-                        // Ahora solo se copia el valor de la placa del vehículo
-                        const combinedText = vehiculoPlaca;
-                        
-                        const tempInput = document.createElement('textarea');
-                        tempInput.value = combinedText;
-                        document.body.appendChild(tempInput);
-                        tempInput.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(tempInput);
-                        
-                        showMessage('Placa del Vehículo copiada.');
-                    });
-                });
-            }
-
-            // Función para cargar y mostrar los datos de la hoja de cálculo de Vehículos
-            async function loadVehiculos() {
-                vehiculosContainer.innerHTML = '<div class="loader"></div>';
-                try {
-                    const response = await fetch(`${GAS_API_URL}?sheet=Vehiculos`);
-                    const result = await response.json();
-                    
-                    if (result.error) {
-                        vehiculosContainer.innerHTML = `<p style="color: red;">Error al cargar los datos: ${result.error}</p>`;
-                        console.error('GAS API Error:', result.error);
-                        return;
-                    }
-
-                    const data = result.data;
-                    const headers = result.headers.filter(h => h && h.trim() !== '');
-                    const fixedHeaderNames = ['Vehiculo_ID', 'Cliente_Nombre'];
-                    const fixedIndices = fixedHeaderNames.map(name => headers.indexOf(name));
-                    
-                    if (fixedIndices.some(index => index === -1)) {
-                        console.error('Error: Una o más columnas a fijar no se encontraron en los datos de Vehículos.');
-                        vehiculosContainer.innerHTML = `<p style="color: red;">Error: Las columnas a anclar (Vehiculo_ID, Cliente_Nombre) no fueron encontradas.</p>`;
-                        return;
-                    }
-
-                    let tableHTML = '<table class="data-table"><thead><tr>';
-                    tableHTML += `<th class="sticky-col sticky-col-0"></th>`;
-                    headers.forEach((header, index) => {
-                        const isFixed = fixedIndices.includes(index);
-                        const className = isFixed ? `sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}` : '';
-                        tableHTML += `<th class="${className}">${header}</th>`;
-                    });
-                    tableHTML += '</tr></thead><tbody>';
-
-                    data.forEach(row => {
-                        tableHTML += '<tr>';
-                        tableHTML += `<td class="sticky-col sticky-col-0"><button class="copy-button"><i class="fas fa-copy"></i></button></td>`;
-                        headers.forEach((header, index) => {
-                            const isFixed = fixedIndices.includes(index);
-                            const className = isFixed ? `sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}` : '';
-                            let cellValue = row[header] || '';
-                            if (header === 'Vehiculo_Data_Reg') {
-                                cellValue = formatDateTime(cellValue);
-                            }
-                            tableHTML += `<td class="${className}">${cellValue}</td>`;
-                        });
-                        tableHTML += '</tr>';
-                    });
-                    tableHTML += '</tbody></table>';
-                    vehiculosContainer.innerHTML = tableHTML;
-                    attachVehiculosCopyListeners();
-
-                } catch (error) {
-                    vehiculosContainer.innerHTML = '<p style="color: red;">No se pudo conectar con el script. Por favor, asegúrate de que la URL de despliegue sea correcta y esté publicada para acceso anónimo.</p>';
-                    console.error('Fetch Error:', error);
-                }
-            }
-
-            // Función para cargar y mostrar los datos de la hoja de cálculo de Órdenes
-            async function loadOrdenes() {
-                ordenesContainer.innerHTML = '<div class="loader"></div>';
-                try {
-                    const response = await fetch(`${GAS_API_URL}?sheet=OrdenesCab`);
-                    const result = await response.json();
-                    
-                    if (result.error) {
-                        ordenesContainer.innerHTML = `<p style="color: red;">Error al cargar los datos: ${result.error}</p>`;
-                        console.error('GAS API Error:', result.error);
-                        return;
-                    }
-
-                    const data = result.data;
-                    const headers = result.headers.filter(h => h && h.trim() !== '');
-                    const fixedHeaderNames = ['Orden_ID', 'Vehiculo_Placa'];
-                    const fixedIndices = fixedHeaderNames.map(name => headers.indexOf(name));
-                    
-                    if (fixedIndices.some(index => index === -1)) {
-                        console.error('Error: Una o más columnas a fijar no se encontraron en los datos de Órdenes.');
-                        ordenesContainer.innerHTML = `<p style="color: red;">Error: Las columnas a anclar (Orden_ID, Vehiculo_Placa) no fueron encontradas.</p>`;
-                        return;
-                    }
-
-                    let tableHTML = '<table class="data-table ordenes-table"><thead><tr>';
-                    tableHTML += `<th class="sticky-col sticky-col-0"></th>`;
-                    headers.forEach((header, index) => {
-                        let className = '';
-                        const isFixed = fixedIndices.includes(index);
-                        if (isFixed) {
-                             className += ` sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}`;
-                        }
-                        // Añade las clases de justificación y ancho
-                        if (header === 'Orden_Total') {
-                            className += ' text-right col-narrow';
-                        } else if (header === 'Orden_Fecha') {
-                            className += ' col-narrow';
-                        }
-                        tableHTML += `<th class="${className.trim()}">${header}</th>`;
-                    });
-                    tableHTML += '</tr></thead><tbody>';
-
-                    data.forEach(row => {
-                        tableHTML += '<tr>';
-                        tableHTML += `<td class="sticky-col sticky-col-0"><button class="copy-button"><i class="fas fa-copy"></i></button></td>`;
-                        headers.forEach((header, index) => {
-                            let className = '';
-                            const isFixed = fixedIndices.includes(index);
-                            if (isFixed) {
-                                className += ` sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}`;
-                            }
-                            // Añade las clases de justificación y ancho
-                            if (header === 'Orden_Total') {
-                                className += ' text-right col-narrow';
-                            } else if (header === 'Orden_Fecha') {
-                                className += ' col-narrow';
-                            }
-                            let cellValue = row[header] || '';
-                            if (header === 'Orden_Fecha') { // MODIFICACIÓN: Cambiado a 'Orden_Fecha'
-                                cellValue = formatDateTime(cellValue);
-                            }
-                            tableHTML += `<td class="${className.trim()}">${cellValue}</td>`;
-                        });
-                        tableHTML += '</tr>';
-                    });
-                    tableHTML += '</tbody></table>';
-                    ordenesContainer.innerHTML = tableHTML;
-                    attachOrdenesCopyListeners(headers);
-
-                } catch (error) {
-                    ordenesContainer.innerHTML = '<p style="color: red;">No se pudo conectar con el script. Por favor, asegúrate de que la URL de despliegue sea correcta y esté publicada para acceso anónimo.</p>';
-                    console.error('Fetch Error:', error);
-                }
-            }
-
-            // Función para filtrar las tablas según el valor de búsqueda
-            function filterTables() {
-                const searchTerm = searchInput.value.toLowerCase();
-                let foundMatch = false;
-
-                // Filtra la tabla de Vehículos
-                const vehiculoRows = vehiculosContainer.querySelectorAll('tbody tr');
-                vehiculoRows.forEach(row => {
-                    const rowText = row.textContent.toLowerCase();
-                    if (rowText.includes(searchTerm)) {
-                        row.style.display = '';
-                        foundMatch = true;
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-
-                // Filtra la tabla de Órdenes
-                const ordenesRows = ordenesContainer.querySelectorAll('tbody tr');
-                ordenesRows.forEach(row => {
-                    const rowText = row.textContent.toLowerCase();
-                    if (rowText.includes(searchTerm)) {
-                        row.style.display = '';
-                        foundMatch = true;
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-
-                // Muestra un mensaje si no hay coincidencias
-                if (!foundMatch && searchTerm.length > 0) {
-                    showMessage('No se encontraron coincidencias.');
-                }
-            }
-
-            // MODIFICACIÓN: Función para cargar dinámicamente el formulario de registro
-            async function loadRegisterForm() {
-                vehiculosSection.innerHTML = '<div class="loader"></div>'; // Muestra un cargador
-                try {
-                    // La URL del archivo es 'registerVeh.html' ya que está en el mismo nivel
-                    const response = await fetch('registerVeh.html');
-                    if (!response.ok) {
-                        throw new Error('No se pudo cargar el formulario. Asegúrate de que el archivo existe.');
-                    }
-                    const formHtml = await response.text();
-                    vehiculosSection.innerHTML = formHtml; // Inyecta el HTML del formulario
-                } catch (error) {
-                    vehiculosSection.innerHTML = `<p style="color: red;">Error al cargar el formulario: ${error.message}</p>`;
-                    console.error('Fetch Error:', error);
-                }
-            }
-
-            // Maneja los clics en los enlaces de la barra de navegación
-            navLinks.forEach(link => {
-                link.addEventListener('click', (event) => {
-                    event.preventDefault(); // Previene la recarga de la página
-                    const sectionId = link.getAttribute('href').substring(1);
-
-                    // Lógica para mostrar la sección o cargar el formulario dinámicamente
-                    if (sectionId === 'inicio') {
-                        showSection(sectionId);
-                        loadVehiculos();
-                        loadOrdenes();
-                    } else if (sectionId === 'vehiculos') {
-                        showSection(sectionId);
-                        loadRegisterForm(); // Carga el formulario dinámicamente
-                    } else {
-                        showSection(sectionId);
-                    }
-                });
-            });
-
-            // Agrega el listener para el campo de búsqueda
-            searchInput.addEventListener('input', filterTables);
-
-            // Agrega el listener para el botón de borrar búsqueda
-            clearSearchBtn.addEventListener('click', () => {
-                searchInput.value = '';
-                filterTables();
-            });
-
-            // Agrega el listener para el botón de cerrar sesión
-            logoutLink.addEventListener('click', (event) => {
-                event.preventDefault();
-                window.location.href = './index.html';
-            });
-            
-            // Muestra la sección de inicio y carga ambas tablas por defecto
-            showSection('inicio');
-            loadVehiculos();
-            loadOrdenes();
+        // Lógica para el botón "Cerrar Sesión" (ya existente)
+        logoutButton.addEventListener('click', () => {
+            sessionStorage.removeItem('loggedInUser'); // Limpiar sesión
+            window.location.href = 'index.html'; // Redirigir al login
         });
     </script>
 </body>
