@@ -202,6 +202,37 @@
         .data-table .text-right {
             text-align: right;
         }
+
+        /* Estilos para la barra de búsqueda */
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .search-button {
+            padding: 10px 15px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            white-space: nowrap; /* Evita que el texto se envuelva */
+        }
+
+        .search-button:hover {
+            background-color: #5a6268;
+        }
       
         .loader {
             border: 4px solid #f3f3f3;
@@ -233,6 +264,11 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        }
+      
+        /* Clase para un ancho de columna reducido */
+        .col-narrow {
+            width: 100px;
         }
     </style>
 </head>
@@ -275,12 +311,20 @@
     <div class="content">
         <!-- Sección de Inicio -->
         <div id="inicio" class="section active">
-            <h1>Listado de Vehículos</h1>
+            <h1>Listado de Vehículos y Órdenes</h1>
+            
+            <!-- Contenedor del motor de búsqueda -->
+            <div class="search-container">
+                <input type="text" id="search-input" class="search-input" placeholder="Buscar en todas las tablas...">
+                <button id="clear-search-btn" class="search-button">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
             <div id="vehiculos-container" class="table-container">
                 <!-- El contenido de la tabla de vehículos se inyectará aquí con JavaScript -->
             </div>
 
-            <h1>Listado de Órdenes</h1>
             <div id="ordenes-container" class="table-container">
                 <!-- El contenido de la tabla de órdenes se inyectará aquí con JavaScript -->
             </div>
@@ -322,6 +366,8 @@
             const messageBox = document.getElementById('message-box');
             const messageText = document.getElementById('message-text');
             const logoutLink = document.getElementById('link-logout');
+            const searchInput = document.getElementById('search-input');
+            const clearSearchBtn = document.getElementById('clear-search-btn');
 
             // Función para mostrar la sección correcta
             function showSection(sectionId) {
@@ -367,12 +413,13 @@
                         const row = button.closest('tr');
                         const cells = row.querySelectorAll('td');
                         
+                        // Captura los valores de las celdas en las posiciones correctas para Placa, Modelo y Año
                         const placa = cells[1].textContent.trim();
-                        const marca = cells[2].textContent.trim();
                         const modelo = cells[3].textContent.trim();
                         const anio = cells[4].textContent.trim();
 
-                        const combinedText = `${placa} ${marca} ${modelo} ${anio}`;
+                        // Concatena los valores con un espacio en blanco
+                        const combinedText = `${placa} ${modelo} ${anio}`;
                         
                         const tempInput = document.createElement('textarea');
                         tempInput.value = combinedText;
@@ -399,14 +446,13 @@
                         const row = button.closest('tr');
                         const cells = row.querySelectorAll('td');
                         
-                        // Obtenemos los índices de las columnas a copiar de forma dinámica
-                        const ordenIdIndex = headers.indexOf('Orden_ID') + 1; // +1 por la columna del botón de copia
+                        // Obtenemos el índice de la columna Vehiculo_Placa de forma dinámica
                         const vehiculoPlacaIndex = headers.indexOf('Vehiculo_Placa') + 1;
 
-                        const ordenID = cells[ordenIdIndex].textContent.trim();
                         const vehiculoPlaca = cells[vehiculoPlacaIndex].textContent.trim();
-
-                        const combinedText = `Orden ID: ${ordenID}, Placa: ${vehiculoPlaca}`;
+                        
+                        // Ahora solo se copia el valor de la placa del vehículo
+                        const combinedText = vehiculoPlaca;
                         
                         const tempInput = document.createElement('textarea');
                         tempInput.value = combinedText;
@@ -415,7 +461,7 @@
                         document.execCommand('copy');
                         document.body.removeChild(tempInput);
                         
-                        showMessage('Datos de la Orden copiados.');
+                        showMessage('Placa del Vehículo copiada.');
                     });
                 });
             }
@@ -509,9 +555,11 @@
                         if (isFixed) {
                              className += ` sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}`;
                         }
-                        // Añade la clase `text-right` solo para la columna 'Orden_Total'
+                        // Añade las clases de justificación y ancho
                         if (header === 'Orden_Total') {
-                             className += ' text-right';
+                            className += ' text-right col-narrow';
+                        } else if (header === 'Orden_Fecha') {
+                            className += ' col-narrow';
                         }
                         tableHTML += `<th class="${className.trim()}">${header}</th>`;
                     });
@@ -526,9 +574,11 @@
                             if (isFixed) {
                                 className += ` sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}`;
                             }
-                            // Añade la clase `text-right` solo para la columna 'Orden_Total'
+                            // Añade las clases de justificación y ancho
                             if (header === 'Orden_Total') {
-                                className += ' text-right';
+                                className += ' text-right col-narrow';
+                            } else if (header === 'Orden_Fecha') {
+                                className += ' col-narrow';
                             }
                             let cellValue = row[header] || '';
                             if (header === 'Orden_Fecha') { // MODIFICACIÓN: Cambiado a 'Orden_Fecha'
@@ -548,6 +598,41 @@
                 }
             }
 
+            // Función para filtrar las tablas según el valor de búsqueda
+            function filterTables() {
+                const searchTerm = searchInput.value.toLowerCase();
+                let foundMatch = false;
+
+                // Filtra la tabla de Vehículos
+                const vehiculoRows = vehiculosContainer.querySelectorAll('tbody tr');
+                vehiculoRows.forEach(row => {
+                    const rowText = row.textContent.toLowerCase();
+                    if (rowText.includes(searchTerm)) {
+                        row.style.display = '';
+                        foundMatch = true;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Filtra la tabla de Órdenes
+                const ordenesRows = ordenesContainer.querySelectorAll('tbody tr');
+                ordenesRows.forEach(row => {
+                    const rowText = row.textContent.toLowerCase();
+                    if (rowText.includes(searchTerm)) {
+                        row.style.display = '';
+                        foundMatch = true;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Muestra un mensaje si no hay coincidencias
+                if (!foundMatch && searchTerm.length > 0) {
+                    showMessage('No se encontraron coincidencias.');
+                }
+            }
+
             // Maneja los clics en los enlaces de la barra de navegación
             navLinks.forEach(link => {
                 link.addEventListener('click', (event) => {
@@ -560,6 +645,15 @@
                         loadOrdenes();
                     }
                 });
+            });
+
+            // Agrega el listener para el campo de búsqueda
+            searchInput.addEventListener('input', filterTables);
+
+            // Agrega el listener para el botón de borrar búsqueda
+            clearSearchBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                filterTables();
             });
 
             // Agrega el listener para el botón de cerrar sesión
