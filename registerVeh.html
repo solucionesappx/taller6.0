@@ -270,11 +270,13 @@
 
             const vehicleData = {
                 Vehiculo_ID: generateShortUUID(),
-                Cliente_ID: loggedInUser.Cliente_ID,
+                Cliente_Nombre: "X",
                 Vehiculo_Marca: marca,
                 Vehiculo_Modelo: modelo,
                 Vehiculo_Año: anio,
                 Vehiculo_Placa: placa,
+                Vehiculo_Estado: "Activo",
+                Vehiculo_UsuarioReg: loggedInUser.Cliente_ID
                 Vehiculo_Data_Reg: formatDateTime(new Date())
             };          
             console.log("Contenido completo del objeto JSON enviado:", vehicleData);
