@@ -22,8 +22,8 @@
 
         /* Estilos para el elemento de navegación */
         nav {
-            background-color: #1a202c; /* Color de fondo oscuro para contraste */
-            border-radius: 0 0 12px 12px; /* Redondea solo las esquinas inferiores */
+            background-color: #007bff; /* Un azul más vivo */
+            /* Se eliminó el border-radius para hacer los bordes cuadrados */
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             /* Propiedades para fijar la barra de navegación en la parte superior */
             position: fixed;
@@ -63,7 +63,7 @@
 
         /* Estilos para el efecto al pasar el cursor (hover) */
         .nav-bar li a:hover {
-            background-color: #2d3748; /* Color de fondo ligeramente más claro al pasar el cursor */
+            background-color: #0056b3; /* Un azul más oscuro al pasar el cursor */
         }
         
         /* Estilos para los íconos */
@@ -95,6 +95,7 @@
             margin: 0 auto;
             background-color: #fff;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 12px;
         }
 
         .section {
@@ -106,9 +107,13 @@
         }
         
         /* Contenedor principal de la tabla */
-        #vehiculos-container {
+        .table-container {
             margin-top: 20px;
             overflow-x: auto; /* Habilita el desplazamiento horizontal */
+        }
+        
+        .table-container + .table-container {
+            margin-top: 40px; /* Agrega más espacio entre las tablas */
         }
 
         /* Estilos de la tabla de datos */
@@ -148,26 +153,39 @@
             top: 0; /* Asegura que el encabezado también sea anclado verticalmente */
         }
 
-        /* Posiciones específicas para las columnas ancladas */
-        /* Columna 0 (copia): Anclada a la izquierda */
+        /* Estilos específicos para las columnas ancladas de la tabla de vehículos */
         .data-table th.sticky-col-0, .data-table td.sticky-col-0 { 
             left: 0; 
-            width: 35px; /* Ancho fijo para la columna del botón */
+            width: 40px; /* Ancho fijo para la columna del botón */
         }
-        /* Columna 1 (Vehiculo_ID): Anclada después de la columna 0 */
         .data-table th.sticky-col-1, .data-table td.sticky-col-1 { 
             left: 35px; /* Comienza donde termina la columna 0 */
-            width: 120px; /* Ancho fijo para esta columna */
+            width: 80px; /* ANCHO AJUSTADO para que coincida con la tabla de órdenes */
         }
-        /* Columna 2 (Cliente_Nombre): Anclada después de la columna 1 */
         .data-table th.sticky-col-2, .data-table td.sticky-col-2 { 
-            left: 120px; /* Comienza donde termina la columna 1 (35px + 120px) */
-            width: 130px; /* Ancho fijo para esta columna */
+            /* Se basa en el ancho de las columnas anteriores: 35px (columna 0) + 80px (columna 1) */
+            left: 115px; 
+            width: 5000px; /* Ancho ajustado para esta columna */
         }
-        
+       
+        /* Estilos específicos para las columnas ancladas de la tabla de órdenes */
+        .ordenes-table th.sticky-col-0, .ordenes-table td.sticky-col-0 {
+            left: 0;
+            width: 35px; /* Ancho fijo para la columna del botón */
+        }
+        .ordenes-table th.sticky-col-1, .ordenes-table td.sticky-col-1 {
+            left: 35px; /* Comienza donde termina la columna 0 */
+            width: 80px; /* Ancho reducido para el Orden_ID */
+        }
+        .ordenes-table th.sticky-col-2, .ordenes-table td.sticky-col-2 {
+            /* Se basa en el ancho de las columnas anteriores: 35px (columna 0) + 80px (columna 1) */
+            left: 115px; 
+            width: 80px; /* Ancho reducido para el Orden_ID */
+        }
+       
         /* Estilos para los botones de la tabla */
         .data-table button {
-            background-color: #4a5568;
+            background-color: #007bff;
             color: white;
             border: none;
             padding: 5px 8px;
@@ -177,12 +195,12 @@
         }
 
         .data-table button:hover {
-            background-color: #2d3748;
+            background-color: #0056b3;
         }
         
         /* Estilo para los botones de acción como "Añadir Fila" */
         .action-button {
-            background-color: #4a5568;
+            background-color: #007bff;
             color: white;
             border: none;
             padding: 10px 15px;
@@ -190,14 +208,14 @@
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.1s ease;
             font-weight: bold;
-            display: inline-flex;
+            display: none; /* Cambiado a 'none' para que no se muestre */
             align-items: center;
             gap: 8px;
             margin-bottom: 15px;
         }
 
         .action-button:hover {
-            background-color: #2d3748;
+            background-color: #0056b3;
         }
 
         .action-button:active {
@@ -206,7 +224,7 @@
 
         .loader {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #1a202c;
+            border-top: 4px solid #007bff;
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -269,25 +287,21 @@
     <div class="content">
         <!-- Sección de Inicio -->
         <div id="inicio" class="section active">
-            <h1>¡Bienvenido!</h1>
-            <p>
-                Este es un ejemplo de contenido para demostrar el comportamiento de la barra de navegación. Haz clic en las pestañas para ver el contenido dinámico.
-            </p>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </p>
+            <h1>Listado de Vehículos</h1>
+            <div id="vehiculos-container" class="table-container">
+                <!-- El contenido de la tabla de vehículos se inyectará aquí con JavaScript -->
+            </div>
+
+            <h1>Listado de Órdenes</h1>
+            <div id="ordenes-container" class="table-container">
+                <!-- El contenido de la tabla de órdenes se inyectará aquí con JavaScript -->
+            </div>
         </div>
 
-        <!-- Sección de Vehículos (aquí se mostrará la tabla) -->
+        <!-- Sección de Vehículos (ahora vacía) -->
         <div id="vehiculos" class="section">
             <h1>Tabla de Vehículos</h1>
-            <!-- Botón para añadir una nueva fila -->
-            <button id="add-row-button" class="action-button">
-                <i class="fas fa-plus"></i> Añadir Fila
-            </button>
-            <div id="vehiculos-container">
-                <!-- El contenido de la tabla se inyectará aquí con JavaScript -->
-            </div>
+            <p>La tabla de vehículos ha sido movida a la pestaña de "Inicio" para una mejor visualización.</p>
         </div>
 
         <!-- Sección de Servicios -->
@@ -316,9 +330,9 @@
             const navLinks = document.querySelectorAll('.nav-bar a');
             const sections = document.querySelectorAll('.section');
             const vehiculosContainer = document.getElementById('vehiculos-container');
+            const ordenesContainer = document.getElementById('ordenes-container');
             const messageBox = document.getElementById('message-box');
             const messageText = document.getElementById('message-text');
-            const addRowButton = document.getElementById('add-row-button');
 
             // Función para mostrar la sección correcta
             function showSection(sectionId) {
@@ -351,11 +365,10 @@
                 return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
             }
 
-            // Función para adjuntar los listeners de copia a los botones
-            function attachCopyListeners() {
-                const copyButtons = document.querySelectorAll('.copy-button');
+            // Función para adjuntar los listeners de copia para la tabla de vehículos
+            function attachVehiculosCopyListeners() {
+                const copyButtons = vehiculosContainer.querySelectorAll('.copy-button');
                 copyButtons.forEach(button => {
-                    // Evita adjuntar el mismo listener varias veces
                     if (button.dataset.listenerAttached) {
                         return;
                     }
@@ -365,18 +378,13 @@
                         const row = button.closest('tr');
                         const cells = row.querySelectorAll('td');
                         
-                        // Obtiene los valores de las columnas específicas para copiar
-                        // Nota: La primera celda (índice 0) es el botón de copia, por lo que las
-                        // otras celdas se desplazan en el índice.
-                        const placa = cells[headers.indexOf('Vehiculo_Placa') + 1].textContent.trim();
-                        const marca = cells[headers.indexOf('Vehiculo_Marca') + 1].textContent.trim();
-                        const modelo = cells[headers.indexOf('Vehiculo_Modelo') + 1].textContent.trim();
-                        const anio = cells[headers.indexOf('Vehiculo_Año') + 1].textContent.trim();
+                        const placa = cells[1].textContent.trim();
+                        const marca = cells[2].textContent.trim();
+                        const modelo = cells[3].textContent.trim();
+                        const anio = cells[4].textContent.trim();
 
-                        // Concatena los valores con un espacio
                         const combinedText = `${placa} ${marca} ${modelo} ${anio}`;
                         
-                        // Utiliza un campo de texto temporal para copiar los datos
                         const tempInput = document.createElement('textarea');
                         tempInput.value = combinedText;
                         document.body.appendChild(tempInput);
@@ -384,56 +392,49 @@
                         document.execCommand('copy');
                         document.body.removeChild(tempInput);
                         
-                        // Llama a la nueva función de mensaje
-                        showMessage('Datos del Vehiculo copiados.');
+                        showMessage('Datos del Vehículo copiados.');
                     });
                 });
             }
 
-            // Función para añadir una nueva fila a la tabla (solo en la página)
-            function addNewRow() {
-                const tableBody = document.querySelector('.data-table tbody');
-                // Si la tabla no existe o no tiene cuerpo, no hacemos nada
-                if (!tableBody) {
-                    showMessage('La tabla aún no está cargada.');
-                    return;
-                }
-                
-                // Obtenemos el número de columnas de la tabla existente
-                const numColumns = tableBody.querySelector('tr').children.length;
-                
-                // Crea el HTML para la nueva fila
-                let newRowHtml = '<tr>';
-                for (let i = 0; i < numColumns; i++) {
-                    // La primera celda es para el botón de copia
-                    if (i === 0) {
-                        newRowHtml += '<td class="sticky-col sticky-col-0"><button class="copy-button"><i class="fas fa-copy"></i></button></td>';
-                    } else if (i === 1 || i === 2) {
-                        // Las celdas fijas (columna 1 y 2)
-                        newRowHtml += `<td class="sticky-col sticky-col-${i}"></td>`;
-                    } else {
-                        // Las celdas normales
-                        newRowHtml += `<td></td>`;
+            // Función para adjuntar los listeners de copia para la tabla de órdenes
+            function attachOrdenesCopyListeners(headers) {
+                const copyButtons = ordenesContainer.querySelectorAll('.copy-button');
+                copyButtons.forEach(button => {
+                    if (button.dataset.listenerAttached) {
+                        return;
                     }
-                }
-                newRowHtml += '</tr>';
+                    button.dataset.listenerAttached = true;
+                    
+                    button.addEventListener('click', () => {
+                        const row = button.closest('tr');
+                        const cells = row.querySelectorAll('td');
+                        
+                        // Obtenemos los índices de las columnas a copiar de forma dinámica
+                        const ordenIdIndex = headers.indexOf('Orden_ID') + 1; // +1 por la columna del botón de copia
+                        const vehiculoPlacaIndex = headers.indexOf('Vehiculo_Placa') + 1;
 
-                // Añade la nueva fila al cuerpo de la tabla
-                tableBody.insertAdjacentHTML('beforeend', newRowHtml);
-                
-                // Adjunta los listeners de copia a los nuevos botones
-                attachCopyListeners();
+                        const ordenID = cells[ordenIdIndex].textContent.trim();
+                        const vehiculoPlaca = cells[vehiculoPlacaIndex].textContent.trim();
+
+                        const combinedText = `Orden ID: ${ordenID}, Placa: ${vehiculoPlaca}`;
+                        
+                        const tempInput = document.createElement('textarea');
+                        tempInput.value = combinedText;
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
+                        
+                        showMessage('Datos de la Orden copiados.');
+                    });
+                });
             }
 
-            // Función para cargar y mostrar los datos de la hoja de cálculo
+            // Función para cargar y mostrar los datos de la hoja de cálculo de Vehículos
             async function loadVehiculos() {
-                // Muestra un indicador de carga
                 vehiculosContainer.innerHTML = '<div class="loader"></div>';
-                // Oculta el botón de añadir fila mientras carga
-                addRowButton.style.display = 'none';
-
                 try {
-                    // El script usa el parámetro 'sheet' para saber qué hoja leer
                     const response = await fetch(`${GAS_API_URL}?sheet=Vehiculos`);
                     const result = await response.json();
                     
@@ -444,69 +445,102 @@
                     }
 
                     const data = result.data;
-                    // Filtra cualquier encabezado vacío o nulo
                     const headers = result.headers.filter(h => h && h.trim() !== '');
-                    
-                    // Encuentra los índices de las columnas que deben ser fijas
                     const fixedHeaderNames = ['Vehiculo_ID', 'Cliente_Nombre'];
                     const fixedIndices = fixedHeaderNames.map(name => headers.indexOf(name));
                     
-                    // Asegura que las columnas existan
                     if (fixedIndices.some(index => index === -1)) {
-                        console.error('Error: Una o más columnas a fijar no se encontraron en los datos.');
-                        // Puedes manejar el error mostrando un mensaje al usuario
-                        vehiculosContainer.innerHTML = `<p style="color: red;">Error: Las columnas a anclar (Vehiculo_ID, Cliente_Nombre) no fueron encontradas en los datos de la hoja de cálculo.</p>`;
+                        console.error('Error: Una o más columnas a fijar no se encontraron en los datos de Vehículos.');
+                        vehiculosContainer.innerHTML = `<p style="color: red;">Error: Las columnas a anclar (Vehiculo_ID, Cliente_Nombre) no fueron encontradas.</p>`;
                         return;
                     }
 
-                    // Construye la tabla completa
                     let tableHTML = '<table class="data-table"><thead><tr>';
-                    
-                    // Genera los encabezados
-                    // Agrega el encabezado de la columna virtual de copia
                     tableHTML += `<th class="sticky-col sticky-col-0"></th>`;
                     headers.forEach((header, index) => {
                         const isFixed = fixedIndices.includes(index);
                         const className = isFixed ? `sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}` : '';
                         tableHTML += `<th class="${className}">${header}</th>`;
                     });
-
                     tableHTML += '</tr></thead><tbody>';
 
-                    // Filas de la tabla
                     data.forEach(row => {
                         tableHTML += '<tr>';
-                        
-                        // Añade la celda de la columna virtual de copia
                         tableHTML += `<td class="sticky-col sticky-col-0"><button class="copy-button"><i class="fas fa-copy"></i></button></td>`;
-
-                        // Añade las celdas de la fila
                         headers.forEach((header, index) => {
                             const isFixed = fixedIndices.includes(index);
                             const className = isFixed ? `sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}` : '';
                             let cellValue = row[header] || '';
-
                             if (header === 'Vehiculo_Data_Reg') {
                                 cellValue = formatDateTime(cellValue);
                             }
-
                             tableHTML += `<td class="${className}">${cellValue}</td>`;
                         });
-                        
                         tableHTML += '</tr>';
                     });
-
                     tableHTML += '</tbody></table>';
                     vehiculosContainer.innerHTML = tableHTML;
-                    
-                    // Muestra el botón de añadir fila después de que la tabla se ha cargado
-                    addRowButton.style.display = 'inline-flex';
-
-                    // Adjunta los listeners de copia a los botones de la tabla
-                    attachCopyListeners();
+                    attachVehiculosCopyListeners();
 
                 } catch (error) {
                     vehiculosContainer.innerHTML = '<p style="color: red;">No se pudo conectar con el script. Por favor, asegúrate de que la URL de despliegue sea correcta y esté publicada para acceso anónimo.</p>';
+                    console.error('Fetch Error:', error);
+                }
+            }
+
+            // Función para cargar y mostrar los datos de la hoja de cálculo de Órdenes
+            async function loadOrdenes() {
+                ordenesContainer.innerHTML = '<div class="loader"></div>';
+                try {
+                    const response = await fetch(`${GAS_API_URL}?sheet=OrdenesCab`);
+                    const result = await response.json();
+                    
+                    if (result.error) {
+                        ordenesContainer.innerHTML = `<p style="color: red;">Error al cargar los datos: ${result.error}</p>`;
+                        console.error('GAS API Error:', result.error);
+                        return;
+                    }
+
+                    const data = result.data;
+                    const headers = result.headers.filter(h => h && h.trim() !== '');
+                    const fixedHeaderNames = ['Orden_ID', 'Vehiculo_Placa'];
+                    const fixedIndices = fixedHeaderNames.map(name => headers.indexOf(name));
+                    
+                    if (fixedIndices.some(index => index === -1)) {
+                        console.error('Error: Una o más columnas a fijar no se encontraron en los datos de Órdenes.');
+                        ordenesContainer.innerHTML = `<p style="color: red;">Error: Las columnas a anclar (Orden_ID, Vehiculo_Placa) no fueron encontradas.</p>`;
+                        return;
+                    }
+
+                    let tableHTML = '<table class="data-table ordenes-table"><thead><tr>';
+                    tableHTML += `<th class="sticky-col sticky-col-0"></th>`;
+                    headers.forEach((header, index) => {
+                        const isFixed = fixedIndices.includes(index);
+                        const className = isFixed ? `sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}` : '';
+                        tableHTML += `<th class="${className}">${header}</th>`;
+                    });
+                    tableHTML += '</tr></thead><tbody>';
+
+                    data.forEach(row => {
+                        tableHTML += '<tr>';
+                        tableHTML += `<td class="sticky-col sticky-col-0"><button class="copy-button"><i class="fas fa-copy"></i></button></td>`;
+                        headers.forEach((header, index) => {
+                            const isFixed = fixedIndices.includes(index);
+                            const className = isFixed ? `sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}` : '';
+                            let cellValue = row[header] || '';
+                            if (header === 'Orden_Fecha') { // MODIFICACIÓN: Cambiado a 'Orden_Fecha'
+                                cellValue = formatDateTime(cellValue);
+                            }
+                            tableHTML += `<td class="${className}">${cellValue}</td>`;
+                        });
+                        tableHTML += '</tr>';
+                    });
+                    tableHTML += '</tbody></table>';
+                    ordenesContainer.innerHTML = tableHTML;
+                    attachOrdenesCopyListeners(headers);
+
+                } catch (error) {
+                    ordenesContainer.innerHTML = '<p style="color: red;">No se pudo conectar con el script. Por favor, asegúrate de que la URL de despliegue sea correcta y esté publicada para acceso anónimo.</p>';
                     console.error('Fetch Error:', error);
                 }
             }
@@ -515,21 +549,20 @@
             navLinks.forEach(link => {
                 link.addEventListener('click', (event) => {
                     event.preventDefault();
-                    const sectionId = link.getAttribute('href').substring(1); // Obtiene el ID de la sección sin el '#'
+                    const sectionId = link.getAttribute('href').substring(1);
                     showSection(sectionId);
-
-                    // Si la sección es la de vehículos, carga los datos
-                    if (sectionId === 'vehiculos') {
+                    
+                    if (sectionId === 'inicio') {
                         loadVehiculos();
+                        loadOrdenes();
                     }
                 });
             });
-            
-            // Agrega el listener para el botón de añadir fila
-            addRowButton.addEventListener('click', addNewRow);
 
-            // Muestra la sección de inicio por defecto
+            // Muestra la sección de inicio y carga ambas tablas por defecto
             showSection('inicio');
+            loadVehiculos();
+            loadOrdenes();
         });
     </script>
 </body>
