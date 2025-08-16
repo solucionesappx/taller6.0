@@ -197,6 +197,11 @@
         .data-table button:hover {
             background-color: #0056b3;
         }
+
+        /* Nuevo estilo para justificar el texto a la derecha */
+        .data-table .text-right {
+            text-align: right;
+        }
       
         .loader {
             border: 4px solid #f3f3f3;
@@ -499,9 +504,16 @@
                     let tableHTML = '<table class="data-table ordenes-table"><thead><tr>';
                     tableHTML += `<th class="sticky-col sticky-col-0"></th>`;
                     headers.forEach((header, index) => {
+                        let className = '';
                         const isFixed = fixedIndices.includes(index);
-                        const className = isFixed ? `sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}` : '';
-                        tableHTML += `<th class="${className}">${header}</th>`;
+                        if (isFixed) {
+                             className += ` sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}`;
+                        }
+                        // Añade la clase `text-right` solo para la columna 'Orden_Total'
+                        if (header === 'Orden_Total') {
+                             className += ' text-right';
+                        }
+                        tableHTML += `<th class="${className.trim()}">${header}</th>`;
                     });
                     tableHTML += '</tr></thead><tbody>';
 
@@ -509,13 +521,20 @@
                         tableHTML += '<tr>';
                         tableHTML += `<td class="sticky-col sticky-col-0"><button class="copy-button"><i class="fas fa-copy"></i></button></td>`;
                         headers.forEach((header, index) => {
+                            let className = '';
                             const isFixed = fixedIndices.includes(index);
-                            const className = isFixed ? `sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}` : '';
+                            if (isFixed) {
+                                className += ` sticky-col sticky-col-${fixedIndices.indexOf(index) + 1}`;
+                            }
+                            // Añade la clase `text-right` solo para la columna 'Orden_Total'
+                            if (header === 'Orden_Total') {
+                                className += ' text-right';
+                            }
                             let cellValue = row[header] || '';
                             if (header === 'Orden_Fecha') { // MODIFICACIÓN: Cambiado a 'Orden_Fecha'
                                 cellValue = formatDateTime(cellValue);
                             }
-                            tableHTML += `<td class="${className}">${cellValue}</td>`;
+                            tableHTML += `<td class="${className.trim()}">${cellValue}</td>`;
                         });
                         tableHTML += '</tr>';
                     });
